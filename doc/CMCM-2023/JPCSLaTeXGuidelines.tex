@@ -1,501 +1,382 @@
 \documentclass[a4paper]{jpconf}
+\usepackage{amsmath}
+\usepackage{multirow}
 \usepackage{graphicx}
 \begin{document}
-\title{Preparing a paper using \LaTeXe\ for publication in \jpcs}
+\title{Analyzing Human Behavior in Digitized Society: Insights from Wordle Data}
 
-\author{Jacky Mucklow}
+\author{Yitong Hu}
 
-\address{Production Editor, \jpcs, \iopp, Dirac House, Temple Back, Bristol BS1~6BE, UK}
+\address{Beijing University of Posts and Telecommunications, Beijing, China}
 
-\ead{jacky.mucklow@iop.org}
+\ead{huyt@bupt.edu.cn}
+
+\author{Yizhe Wang}
+
+\address{Beijing University of Posts and Telecommunications, Beijing, China}
+
+\ead{anonymity@bupt.edu.cn}
+
+\author{Zixuan Zhu}
+
+\address{Beijing University of Posts and Telecommunications, Beijing, China}
+
+\ead{ternura@bupt.edu.cn}
 
 \begin{abstract}
-All articles {\it must} contain an abstract. This document describes the  preparation of a conference paper to be published in \jpcs\ using \LaTeXe\ and the \cls\ class file. The abstract text should be formatted using 10 point font and indented 25 mm from the left margin. Leave 10 mm space after the abstract before you begin the main text of your article. The text of your article should start on the same page as the abstract. The abstract follows the addresses and should give readers concise information about the content of the article and indicate the main results obtained and conclusions drawn. As the abstract is not part of the text it should be complete in itself; no table numbers, figure numbers, references or displayed mathematical expressions should be included. It should be suitable for direct inclusion in abstracting services and should not normally exceed 200 words. The abstract should generally be restricted to a single paragraph. Since contemporary information-retrieval systems rely heavily on the content of titles and abstracts to identify relevant articles in literature searches, great care should be taken in constructing both.
+This paper focuses on analyzing the human behavior of Wordle players using available player data. While there have been many studies discussing the mechanism, strategy, and cultural influence of Wordle, research on the relationship between player data and human group behavior is still lacking. The authors conducted a time series analysis of the number of daily Wordle players and developed a MIMO XGBoost model to predict the distribution of player attempts. The model demonstrates high confidence through a test set, and the authors analyze the predicted data to provide insights for game designers and sociologists.
 \end{abstract}
 
 \section{Introduction}
-These guidelines show how to prepare articles for publication in \jpcs\ using \LaTeX\ so they can be published quickly and accurately. Articles will be refereed by the \corg s but the accepted PDF will be published with no editing, proofreading or changes to layout. It is, therefore, the author's responsibility to ensure that the content and layout are correct.  This document has been prepared using \cls\ so serves as a sample document. The class file and accompanying documentation are available from \verb"http://jpcs.iop.org".
+Wordle is a popular English word-guessing game created by Josh Wardle. Wordle generates a new and globally unique 5-letter word each day, and players need to guess the word in 6 attempts and can share their daily Wordle score on social media. After each guess, the system displays hints in different colors, including the letter in the correct position (green), with the letter but not in the guessed position (yellow), and without the letter (gray). wordle is simple to play, but fun and challenging, and has become popular on social media.
 
-\section{Preparing your paper}
-\verb"jpconf" requires \LaTeXe\ and  can be used with other package files such
-as those loading the AMS extension fonts 
-\verb"msam" and \verb"msbm" (these fonts provide the 
-blackboard bold alphabet and various extra maths symbols as well as 
-symbols useful in figure captions); an extra style file \verb"iopams.sty" is 
-provided to load these packages and provide extra definitions for bold Greek letters. 
-\subsection{Headers, footers and page numbers}
-Authors should {\it not} add headers, footers or page numbers to the pages of their article---they will
-be added by \iopp\ as part of the production process.
+The explosion of Wordle has generated a lively discussion in the Internet community about word-guessing strategies. Players' discussions and summaries of word-guessing strategies may affect the distribution of players' scores. On the other hand, social media also influenced the daily game data. For example, the sharing of Wordle scores on social media may attract more people to play the game; players who guess the word of the day first may put hints on social media, which may reduce the difficulty of the game that day; or the hot events of a certain day may change the number of people playing Wordle that day, etc.
 
-\subsection{{\cls\ }package options}
-The \cls\ class file has two options `a4paper' and `letterpaper':
-\begin{verbatim}
-\documentclass[a4paper]{jpconf}
-\end{verbatim}
+Similarly, word-guessing games have attracted a great deal of attention in the academic community. Many studies have analyzed the popularity and user behavior of these games. For example, Teodoro F. Revano \cite{revano2018logical} investigates the factors that make word guessing games engaging and challenging, while Kasikrit Damkliang \cite{damkliang2016guessing} explores the social and cultural aspects of these games, focusing on how they reflect and shape language use. Other word-guessing games, such as Guess the Word and Word Association, have also been studied. k Smith \cite{smith2011cross} on word-guessing focuses on player strategies and game design, while Norbert Schmitt's \cite{schmitt1997researching} study on word association explores the cognitive processes behind word association and the potential of games for language learning.
 
-or \begin{verbatim}
-\documentclass[letterpaper]{jpconf}
-\end{verbatim}
+However, Wordle's player data is not just related to the words themselves, but is a comprehensive representation of the behavior, mindset, and interaction patterns of human groups. Despite the widespread attention Wordle has received, our knowledge of its player behavior and score distribution is still limited. Therefore, we hope to reveal some interesting patterns and trends by analyzing Wordle's player data. We believe that research on such social media games can reveal broader social group phenomena and contribute to a better understanding of human behavior in a digital society.	
 
-\begin{center}
-\begin{table}[h]
-\caption{\label{opt}\cls\ class file options.}
-%\footnotesize\rm
-\centering
-\begin{tabular}{@{}*{7}{l}}
-\br
-Option&Description\\
-\mr
-\verb"a4paper"&Set the paper size and margins for A4 paper.\\
-\verb"letterpaper"&Set the paper size and margins for US letter paper.\\
-\br
-\end{tabular}
-\end{table}
-\end{center}
+Driven by these goals, we study Wordle's daily player engagement counts and player score distributions, and explore the relationships between these data. First, we collected 359 days of Wordle and player data for the corresponding dates from the New York Times and Twitter. Based on our understanding of Wordle's rules and social network features, we propose heterogeneous spatio-temporal features that fuse word topology and social network activity. Secondly, we construct an Autoregressive Integrated Moving Average (ARIMA) model to analyze the number of players playing Wordle each day in a time-series and obtain predictions. Again, we propose a Multiple-input and Multiple-output Extreme Gradient Boosting (MIMO XGBoost) model to predict the distribution of players' scores and ensure that the distribution of scores satisfies the frequency sum constraint of 1. Finally, we analyze the correlation between the data and give the important factors influencing the player score distribution.
 
-The default paper size is A4 (i.e., the default option is {\tt a4paper}) but this can be changed to Letter by 
-using \verb"\documentclass[letterpaper]{jpconf}". It is essential that you do not put macros into the text which alter the page dimensions.
+Through this study, we hope to provide valuable insights for game designers and sociologists to promote a better understanding of social group phenomena and human behavior in digital society.
 
-\section{The title, authors, addresses and abstract} 
-The code for setting the title page information is slightly different from
-the normal default in \LaTeX\ but please follow these instructions as carefully as possible so all articles within a conference have the same style to the title page. 
-The title is set in bold unjustified type using the command
-\verb"\title{#1}", where \verb"#1" is the title of the article. The
-first letter of the title should be capitalized with the rest in lower case. 
-The next information required is the list of all authors' names followed by 
-the affiliations. For the authors' names type \verb"\author{#1}", 
-where \verb"#1" is the 
-list of all authors' names. The style for the names is initials then
-surname, with a comma after all but the last 
-two names, which are separated by `and'. Initials should {\it not} have 
-full stops. First names may be used if desired. The command \verb"\maketitle" is not
-required.
 
-The addresses of the authors' affiliations follow the list of authors. 
-Each address should be set by using
-\verb"\address{#1}" with the address as the single parameter in braces. 
-If there is more 
-than one address then a superscripted number, followed by a space, should come at the start of
-each address. In this case each author should also have a superscripted number or numbers following their name to indicate which address is the appropriate one for them.
- 
-Please also provide e-mail addresses for any or all of the authors using an \verb"\ead{#1}" command after the last address. \verb"\ead{#1}" provides the text Email: so \verb"#1" is just the e-mail address or a list of emails.  
-
-The abstract follows the addresses and
-should give readers concise information about the content 
-of the article and should not normally exceed 200 
-words. {\bf All articles must include an abstract}. To indicate the start 
-of the abstract type \verb"\begin{abstract}" followed by the text of the 
-abstract.  The abstract should normally be restricted 
-to a single paragraph and is terminated by the command
-\verb"\end{abstract}"
-
-\subsection{Sample coding for the start of an article}
-\label{startsample}
-The code for the start of a title page of a typical paper might read:
-\begin{verbatim}
-\title{The anomalous magnetic moment of the 
-neutrino and its relation to the solar neutrino problem}
-
-\author{P J Smith$^1$, T M Collins$^2$, 
-R J Jones$^{3,}$\footnote[4]{Present address:
-Department of Physics, University of Bristol, Tyndalls Park Road, 
-Bristol BS8 1TS, UK.} and Janet Williams$^3$}
-
-\address{$^1$ Mathematics Faculty, Open University, 
-Milton Keynes MK7~6AA, UK}
-\address{$^2$ Department of Mathematics, 
-Imperial College, Prince Consort Road, London SW7~2BZ, UK}
-\address{$^3$ Department of Computer Science, 
-University College London, Gower Street, London WC1E~6BT, UK}
-
-\ead{williams@ucl.ac.uk}
-
-\begin{abstract}
-The abstract appears here.
-\end{abstract}
-\end{verbatim}
-
-\section{The text}
-The text of the article should should be produced using standard \LaTeX\ formatting. Articles may be divided into sections and subsections, but the length limit provided by the \corg\ should be adhered to.
-
-\subsection{Acknowledgments}
-Authors wishing to acknowledge assistance or encouragement from 
-colleagues, special work by technical staff or financial support from 
-organizations should do so in an unnumbered Acknowledgments section 
-immediately following the last numbered section of the paper. The 
-command \verb"\ack" sets the acknowledgments heading as an unnumbered
-section.
-
-\subsection{Appendices}
-Technical detail that it is necessary to include, but that interrupts 
-the flow of the article, may be consigned to an appendix. 
-Any appendices should be included at the end of the main text of the paper, after the acknowledgments section (if any) but before the reference list.
-If there are two or more appendices they will be called Appendix A, Appendix B, etc. 
-Numbered equations will be in the form (A.1), (A.2), etc,
-figures will appear as figure A1, figure B1, etc and tables as table A1,
-table B1, etc.
-
-The command \verb"\appendix" is used to signify the start of the
-appendixes. Thereafter \verb"\section", \verb"\subsection", etc, will 
-give headings appropriate for an appendix. To obtain a simple heading of 
-`Appendix' use the code \verb"\section*{Appendix}". If it contains
-numbered equations, figures or tables the command \verb"\appendix" should
-precede it and \verb"\setcounter{section}{1}" must follow it. 
-
-\section{References}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In the online version of \jpcs\ references will be linked to their original source or to the article within a secondary service such as INSPEC or ChemPort wherever possible. To facilitate this linking extra care should be taken when preparing reference lists. 
-
-Two different styles of referencing are in common use: the Harvard alphabetical system and the Vancouver numerical system.  For \jpcs, the Vancouver numerical system is preferred but authors should use the Harvard alphabetical system if they wish to do so. In the numerical system references are numbered sequentially throughout the text within square brackets, like this [2], and one number can be used to designate several references.  
-
-\subsection{Using \BibTeX}
-We highly recommend the {\ttfamily\textbf\selectfont iopart-num} \BibTeX\ package by Mark~A~Caprio \cite{iopartnum}, which is included with this documentation.
-
-\subsection{Reference lists}
-A complete reference should provide the reader with enough information to locate the article concerned, whether published in print or electronic form, and should, depending on the type of reference, consist of:  
-
+\section{Data}
+We extracted a total of 359 days of data from Twitter and the New York Times, and processed the datasets, including data integration, reduction, cleaning, and normalization. Data file entry descriptions are as follows:
 \begin{itemize}
-\item name(s) and initials;
-\item date published;
-\item title of journal, book or other publication; 
-\item titles of journal articles may also be included (optional);
-\item volume number;
-\item editors, if any;
-\item town of publication and publisher in parentheses for {\it books};
-\item the page numbers.
+    \item {\bf Date: }The date in mm-dd-yyyy (month-day-year) format of a given Wordle puzzle.
+    \item {\bf Word: }The solution word players are trying to guess on the associated date.
+    \item {\bf Number of players: }The total number scores that were recorded on Twitter that day.
+    \item {\bf n tries (1$\leq$ n $\leq$ 6): }The percentage of players solving the puzzle in n guesses.
+    \item {\bf 7 or more tries (X): }The percentage of players that could not solve the puzzle in six or fewer tries. Note: the percentages may not always sum to 100\% due to rounding.
+
 \end{itemize}
 
-Up to ten authors may be given in a particular reference; where 
-there are more than ten only the first should be given followed by 
-`{\it et al}'. If an author is unsure of a particular journal's abbreviated title it is best to leave the title in 
-full. The terms {\it loc.\ cit.\ }and {\it ibid.\ }should not be used. 
-Unpublished conferences and reports should generally not be included 
-in the reference list and articles in the course of publication should 
-be entered only if the journal of publication is known. 
-A thesis submitted for a higher degree may be included 
-in the reference list if it has not been superseded by a published 
-paper and is available through a library; sufficient information 
-should be given for it to be traced readily.
-
-\subsection{Formatting reference lists}
-Numeric reference lists should contain the references within an unnumbered section (such as \verb"\section*{References}"). The 
-reference list itself is started by the code 
-\verb"\begin{thebibliography}{<num>}", where \verb"<num>" is the largest
-number in the reference list and is completed by
-\verb"\end{thebibliography}". 
-Each reference starts with \verb"\bibitem{<label>}", where `label' is the label used for cross-referencing. Each \verb"\bibitem" should only contain a reference to a single article (or a single article and a preprint reference to the same article).  When one number actually covers a group of two or more references to different articles, \verb"\nonum"
-should replace \verb"\bibitem{<label>}" at
-the start of each reference in the group after the first.
-
-For an alphabetic reference list use \verb"\begin{thereferences}" ... \verb"\end{thereferences}" instead of the
-`thebibliography' environment and each reference can be start with just \verb"\item" instead of \verb"\bibitem{label}"
-as cross referencing is less useful for alphabetic references.
-
-\subsection {References to printed journal articles}
-A normal reference to a journal article contains three changes of font (see table \ref{jfonts}) and is constructed as follows:
-
-\begin{itemize}
-\item the authors should be in the form surname (with only the first letter capitalized) followed by the initials with no periods after the initials. Authors should be separated by a comma except for the last two which should be separated by `and' with no comma preceding it;
-\item the article title (if given) should be in lower case letters, except for an initial capital, and should follow the date;
-\item the journal title is in italic and is abbreviated. If a journal has several parts denoted by different letters the part letter should be inserted after the journal in Roman type, e.g. {\it Phys. Rev.} A;
-\item the volume number should be in bold type;
-\item both the initial and final page numbers should be given where possible. The final page number should be in the shortest possible form and separated from the initial page number by an en rule `-- ', e.g. 1203--14, i.e. the numbers `12' are not repeated.
-\end{itemize}
-
-A typical (numerical) reference list might begin
-
-\medskip
-\begin{thebibliography}{9}
-\item Strite S and Morkoc H 1992 {\it J. Vac. Sci. Technol.} B {\bf 10} 1237 
-\item Jain S C, Willander M, Narayan J and van Overstraeten R 2000 
-{\it J. Appl. Phys}. {\bf 87} 965 
-\item Nakamura S, Senoh M, Nagahama S, Iwase N, Yamada T, Matsushita T, Kiyoku H 
-and 	Sugimoto Y 1996 {\it Japan. J. Appl. Phys.} {\bf 35} L74 
-\item Akasaki I, Sota S, Sakai H, Tanaka T, Koike M and Amano H 1996 
-{\it Electron. Lett.} {\bf 32} 1105 
-\item O'Leary S K, Foutz B E, Shur M S, Bhapkar U V and Eastman L F 1998 
-{\it J. Appl. Phys.} {\bf 83} 826 
-\item Jenkins D W and Dow J D 1989 {\it Phys. Rev.} B {\bf 39} 3317 
-\end{thebibliography}
-\smallskip
-
-\noindent which would be obtained by typing
-
-\begin{verbatim}
-\begin{\thebibliography}{9}
-\item Strite S and Morkoc H 1992 {\it J. Vac. Sci. Technol.} B {\bf 10} 1237 
-\item Jain S C, Willander M, Narayan J and van Overstraeten R 2000 
-{\it J. Appl. Phys}. {\bf 87} 965 
-\item Nakamura S, Senoh M, Nagahama S, Iwase N, Yamada T, Matsushita T, Kiyoku H 
-and 	Sugimoto Y 1996 {\it Japan. J. Appl. Phys.} {\bf 35} L74 
-\item Akasaki I, Sota S, Sakai H, Tanaka T, Koike M and Amano H 1996 
-{\it Electron. Lett.} {\bf 32} 1105 
-\item O'Leary S K, Foutz B E, Shur M S, Bhapkar U V and Eastman L F 1998 
-{\it J. Appl. Phys.} {\bf 83} 826 
-\item Jenkins D W and Dow J D 1989 {\it Phys. Rev.} B {\bf 39} 3317 
-\end{\thebibliography}
-\end{verbatim}
-
-\begin{center}
-\begin{table}[h]
-\centering
-\caption{\label{jfonts}Font styles for a reference to a journal article.} 
-\begin{tabular}{@{}l*{15}{l}}
-\br
-Element&Style\\
-\mr
-Authors&Roman type\\
-Date&Roman type\\
-Article title (optional)&Roman type\\
-Journal title&Italic type\\
-Volume number&Bold type\\
-Page numbers&Roman type\\
-\br
-\end{tabular}
-\end{table}
-\end{center}
-
-\subsection{References to \jpcs\ articles}
-Each conference proceeding published in \jpcs\ will be a separate {\it volume}; 
-references should follow the style for conventional printed journals. For example:\vspace{6pt}
-\numrefs{1}
-\item Douglas G 2004 \textit{J. Phys.: Conf. Series} \textbf{1} 23--36
-\endnumrefs
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{References to preprints}
-For preprints there are two distinct cases:
-\renewcommand{\theenumi}{\arabic{enumi}}
+\subsection{Concept Definition}
 \begin{enumerate}
-\item Where the article has been published in a journal and the preprint is supplementary reference information. In this case it should be presented as:
-\medskip
-\numrefs{1}
-\item Kunze K 2003 T-duality and Penrose limits of spatially homogeneous and inhomogeneous cosmologies {\it Phys. Rev.} D {\bf 68} 063517 ({\it Preprint} gr-qc/0303038)
-\endnumrefs
-\item Where the only reference available is the preprint. In this case it should be presented as
-\medskip
-\numrefs{1}
-\item Milson R, Coley A, Pravda V and Pravdova A 2004 Alignment and algebraically special tensors {\it Preprint} gr-qc/0401010
-\endnumrefs
+
+    \item {\bf Solve (the Wordle puzzle): }Enter the correct letters in the correct order to form the Wordle word of the day.
+    \item {\bf Distribution of the players’ score: }The associated percentages of (1, 2, 3, 4, 5, 6, X).
+
 \end{enumerate}
 
-\subsection{References to electronic-only journals}
-In general article numbers are given, and no page ranges, as most electronic-only journals start each article on page 1.
-
-\begin{itemize} 
-\item For {\it New Journal of Physics} (article number may have from one to three digits)
-\numrefs{1}
-\item Fischer R 2004 Bayesian group analysis of plasma-enhanced chemical vapour deposition data {\it New. J. Phys.} {\bf 6} 25 
-\endnumrefs
-\item For SISSA journals the volume is divided into monthly issues and these form part of the article number
-
-\numrefs{2}
-\item Horowitz G T and Maldacena J 2004 The black hole final state {\it J. High Energy Phys.}  	JHEP02(2004)008
-\item Bentivegna E, Bonanno A and Reuter M 2004 Confronting the IR fixed point cosmology 	with 	high-redshift observations {\it J. Cosmol. Astropart. Phys.} JCAP01(2004)001  
-\endnumrefs
-\end{itemize} 
-
-\subsection{References to books, conference proceedings and reports}
-References to books, proceedings and reports are similar to journal references, but have 
-only two changes of font (see table~\ref{book}). 
-
-\begin{table}
-\centering
-\caption{\label{book}Font styles for references to books, conference proceedings and reports.}
-\begin{tabular}{@{}l*{15}{l}}
-\br
-Element&Style\\
-\mr
-Authors&Roman type\\
-Date&Roman type\\
-Book title (optional)&Italic type\\
-Editors&Roman type\\
-Place (city, town etc) of publication&Roman type\\
-Publisher&Roman type\\
-Volume&Roman type\\
-Page numbers&Roman type\\
-\br
-\end{tabular}
-\end{table}
-
-Points to note are:
-\medskip
-\begin{itemize}
-\item Book titles are in italic and should be spelt out in full with initial capital letters for all except minor words. Words such as Proceedings, Symposium, International, Conference, Second, etc should be abbreviated to {\it Proc.}, {\it Symp.}, {\it Int.}, {\it Conf.}, {\it 2nd}, respectively, but the rest of the title should be given in full, followed by the date of the conference and the town or city where the conference was held. For Laboratory Reports the Laboratory should be spelt out wherever possible, e.g. {\it Argonne National Laboratory Report}.
-\item The volume number, for example vol 2, should be followed by the editors, if any, in a form such as `ed A J Smith and P R Jones'. Use {\it et al} if there are more than two editors. Next comes the town of publication and publisher, within brackets and separated by a colon, and finally the page numbers preceded by p if only one number is given or pp if both the initial and final numbers are given.
-\end{itemize}
-
-Examples taken from published papers:
-\medskip
-
-\numrefs{99}
-\item Kurata M 1982 {\it Numerical Analysis for Semiconductor Devices} (Lexington, MA: Heath)
-\item Selberherr S 1984 {\it Analysis and Simulation of Semiconductor Devices} (Berlin: Springer)
-\item Sze S M 1969 {\it Physics of Semiconductor Devices} (New York: Wiley-Interscience)
-\item Dorman L I 1975 {\it Variations of Galactic Cosmic Rays} (Moscow: Moscow State University Press) p 103
-\item Caplar R and Kulisic P 1973 {\it Proc. Int. Conf. on Nuclear Physics (Munich)} vol 1 (Amsterdam: 	North-Holland/American Elsevier) p 517
-\item Cheng G X 2001 {\it Raman and Brillouin Scattering-Principles and Applications} (Beijing: Scientific) 
-\item Szytula A and Leciejewicz J 1989 {\it Handbook on the Physics and Chemistry of Rare Earths} vol 12, ed K A Gschneidner Jr and L Erwin (Amsterdam: Elsevier) p 133
-\item Kuhn T 1998 {\it Density matrix theory of coherent ultrafast dynamics Theory of Transport Properties of Semiconductor Nanostructures} (Electronic Materials vol 4) ed E Sch\"oll (London: Chapman and Hall) chapter 6 pp 173--214
-\endnumrefs
-
-\section{Tables and table captions}
-Tables should be numbered serially and referred to in the text 
-by number (table 1, etc, {\bf rather than} tab. 1). Each table should be a float and be positioned within the text at the most convenient place near to where it is first mentioned in the text. It should have an 
-explanatory caption which should be as concise as possible. 
-
-\subsection{The basic table format}
-The standard form for a table is:
-\begin{verbatim}
-\begin{table}
-\caption{\label{label}Table caption.}
-\begin{center}
-\begin{tabular}{llll}
-\br
-Head 1&Head 2&Head 3&Head 4\\
-\mr
-1.1&1.2&1.3&1.4\\
-2.1&2.2&2.3&2.4\\
-\br
-\end{tabular}
-\end{center}
-\end{table}
-\end{verbatim}
-
-The above code produces table~\ref{ex}.
-
-\begin{table}[h]
-\caption{\label{ex}Table caption.}
-\begin{center}
-\begin{tabular}{llll}
-\br
-Head 1&Head 2&Head 3&Head 4\\
-\mr
-1.1&1.2&1.3&1.4\\
-2.1&2.2&2.3&2.4\\
-\br
-\end{tabular}
-\end{center}
-\end{table}
-
-Points to note are:
-\medskip
+\subsection{Problem Definition}
 \begin{enumerate}
-\item The caption comes before the table.
-\item The normal style is for tables to be centred in the same way as
-equations. This is accomplished
-by using \verb"\begin{center}" \dots\ \verb"\end{center}".
 
-\item The default alignment of columns should be aligned left.
+    \item {For the Number of players prediction problem, given a Date, output the predicted value of the Number of players on that day.}
+    \item {For the prediction of the Distribution of the players' score problem, given a Word and a Date, output the prediction of the Distribution of the players' score for that word on that day. In other words, Predict 1 try, 2tries,... , 7 or more tries(X).}
 
-\item Tables should have only horizontal rules and no vertical ones. The rules at
-the top and bottom are thicker than internal rules and are set with
-\verb"\br" (bold rule). 
-The rule separating the headings from the entries is set with
-\verb"\mr" (medium rule). These commands do not need a following double backslash.
-
-\item Numbers in columns should be aligned as appropriate, usually on the decimal point;
-to help do this a control sequence \verb"\lineup" has been defined 
-which sets \verb"\0" equal to a space the size of a digit, \verb"\m"
-to be a space the width of a minus sign, and \verb"\-" to be a left
-overlapping minus sign. \verb"\-" is for use in text mode while the other
-two commands may be used in maths or text.
-(\verb"\lineup" should only be used within a table
-environment after the caption so that \verb"\-" has its normal meaning
-elsewhere.) See table~\ref{tabone} for an example of a table where
-\verb"\lineup" has been used.
 \end{enumerate}
 
-\begin{table}[h]
-\caption{\label{tabone}A simple example produced using the standard table commands 
-and $\backslash${\tt lineup} to assist in aligning columns on the 
-decimal point. The width of the 
-table and rules is set automatically by the 
-preamble.} 
+\subsection{Assumptions}
+\begin{itemize}
+    \item The records people post on Twitter are accurate.
+    \item The data provided does not include incorrect data from competitors or malicious customers.
+    \item The number of players recorded per day is equal to the sum of the number of statistics, i.e., there are no omitted or excluded records in any of the provided datasets.
+    \item The record uploaded by the player was posted on the day of play.
+    \item Each player uploads records at most once a day.
+\end{itemize}
 
+
+
+
+
+
+\section{Methodology} 
+\subsection{Spatio-Temporal Feature Extraction}
+In order to complete the above two prediction problems, we need more attributes to build our model \cite{yuan2021survey}, \cite{siami2019performance}. According to the rules of Wordle and the characteristics of social networks, we extract the features of the data from two dimensions of space and time.
+
+
+In the {\bf spatial dimension}, Wordle is an alphabet-oriented English word puzzle game, which determines that the topology of words greatly affects the distribution of the number of attempts of human players \cite{sheng2022optimized}, \cite{zhu2022application}. Based on the analysis of Wordle recipes on social networking sites and the morpheme formation of English words, we propose to use the Table~\ref{notation} features to measure the topology of words:
 \begin{center}
-\lineup
-\begin{tabular}{*{7}{l}}
-\br                              
-$\0\0A$&$B$&$C$&\m$D$&\m$E$&$F$&$\0G$\cr 
+\begin{table}[h]
+\centering
+\caption{\label{notation}Notations} 
+\begin{tabular}{@{}l*{15}{l}}
+\br
+Element&Definition\\
 \mr
-\0\023.5&60  &0.53&$-20.2$&$-0.22$ &\01.7&\014.5\cr
-\0\039.7&\-60&0.74&$-51.9$&$-0.208$&47.2 &146\cr 
-\0123.7 &\00 &0.75&$-57.2$&\m---   &---  &---\cr 
-3241.56 &60  &0.60&$-48.1$&$-0.29$ &41   &\015\cr 
+    $PS$ &The part of speech.\\
+    $R_{tn }$ &The percentage of players solving the puzzle in n guesses.\\
+    $F$ &Word frequency\\
+    $N_{dw}$ &The number of duplicate letters\\
+    $N_v$ &The number of vowels\\
+    $N_c$ &The number of consonants\\
+    $N_{iw}$ &The number of infrequently used words\\
+    $N_s$ &The number of syllables\\
+    $IF_{rc}$ &Repetition is continuous or not\\
+    $IF_{vb}$ &Vowel beginning or not\\
+    $IF_{ve}$ &Vowel ending or not\\
+    $IF_{vc}$ &Vowel is continuous or not\\
+    $IF_{p}$ &Polysemous or not\\
 \br
 \end{tabular}
-\end{center}
 \end{table}
- 
-\section{Figures and figure captions}
-Figures must be included in the source code of an article at the appropriate place in the text not grouped together at the end. 
+\end{center}
 
-Each figure should have a brief caption describing it and, if 
-necessary, interpreting the various lines and symbols on the figure. 
-As much lettering as possible should be removed from the figure itself and 
-included in the caption. If a figure has parts, these should be 
-labelled ($a$), ($b$), ($c$), etc. 
-\Tref{blobs} gives the definitions for describing symbols and lines often
-used within figure captions (more symbols are available
-when using the optional packages loading the AMS extension fonts).
+In the {\bf time dimension}, the activity of the social network may affect the number of participants in the game and the level structure of players, which in turn may affect the distribution of the number of attempts \cite{wang2020forecasting}. We select the trading day data of the New York Stock Exchange to mark the date, and introduce the feature Workday or not as a representation of social network activity.
 
-\begin{table}[h]
-\caption{\label{blobs}Control sequences to describe lines and symbols in figure 
-captions.}
-\begin{center}
-\begin{tabular}{lllll}
-\br
-Control sequence&Output&&Control sequence&Output\\
-\mr
-\verb"\dotted"&\dotted        &&\verb"\opencircle"&\opencircle\\
-\verb"\dashed"&\dashed        &&\verb"\opentriangle"&\opentriangle\\
-\verb"\broken"&\broken&&\verb"\opentriangledown"&\opentriangledown\\
-\verb"\longbroken"&\longbroken&&\verb"\fullsquare"&\fullsquare\\
-\verb"\chain"&\chain          &&\verb"\opensquare"&\opensquare\\
-\verb"\dashddot"&\dashddot    &&\verb"\fullcircle"&\fullcircle\\
-\verb"\full"&\full            &&\verb"\opendiamond"&\opendiamond\\
-\br
+In summary, we propose a heterogeneous spatiotemporal feature that combines word topology and social network activity, and follow the principle of data standardization for quantitative processing to obtain quantitative and categorical (starting with IF) features.
+
+
+\subsection{ARIMA Model}
+The autoregressive model describes the relationship between the current value and the historical value and uses the historical time data of the variable to predict itself.
+
+In general, the formula of the P-order autoregressive process is defined as follows:
+\begin{equation}\label{eq:AR_1}
+    y_{t}=\mu+\sum_{i=1}^{p} \gamma_{i} y_{t-i}+\epsilon_{t}
+\end{equation}
+Where $y_t$ is the current value, $\mu$ is the constant term, $p$ is the order, $r_i$ is the autocorrelation coefficient, and $\epsilon_t$ is the error.
+
+
+General P-order autoregressive model AR:
+\begin{equation}\label{eq:AR_2}
+    x_{t}=\alpha_{1} X_{t-1}+\alpha_{2} X_{t-2}+\ldots+a_{p} x_{t-p}+\mu_{t}
+\end{equation}
+
+As can be seen from the formula, the current value is predicted by the historical value, and p is an order in the autoregressive model, which indicates that the historical value of several epochs is used to predict the current value.
+
+Moving averages focus on the accumulation of error terms in autoregressive models.
+
+Among them, the formula of the q-order self-MA model is defined as follows:
+\begin{equation}\label{eq:MR_1}
+    y_{t}=\mu+\epsilon_{t}+\sum_{i=1}^{q} \theta_{i} \epsilon_{t-i}
+\end{equation}
+
+In the AR model, if it is not white noise, it is usually considered to be a moving average of order q:
+\begin{equation}\label{eq:MR_2}
+u_{t}=\varepsilon_{t}+\beta_{1} \varepsilon_{t-1}+\ldots+\beta_{q} \varepsilon_{t-q}
+\end{equation}
+
+The moving average method can effectively eliminate random fluctuations in the forecast \cite{siami2018comparison}.
+The autoregressive moving average model consists of two parts: the autoregressive part and the moving average part. The regression equation is expressed as follows:
+\begin{equation}\label{eq:ARMA}
+    y_{t}=\mu+\sum_{i=1}^{p} \gamma_{i} y_{t-i}+\epsilon_{t}+\sum_{i=1}^{q} \theta_{i} \epsilon_{t-i}
+\end{equation}
+
+
+It can be seen from the regression equation that the autoregressive moving average model combines the advantages of AR and MA. In the ARMA model, the autoregressive process is responsible for quantifying the relationship between the current data and the previous data, and the moving average process is responsible for solving the problem of random changes.
+
+The Autoregressive model (AR), the moving average model (MA), and the difference method (I) are combined to obtain the differential autoregressive moving average model ARIMA (p, d, q), where d is the order of the difference to be performed on the data, and ARIMA \cite{kalpakis2001distance} is the ARMA model after the difference.
+
+
+
+
+
+
+
+
+\subsection{MIMO XGBoost Model}
+
+\subsubsection{Traditional XGBoost Model}
+First, we analyze the traditional XGBoost Model \cite{chen2016xgboost}: A tree ensemble model consists of a set of classification and regression trees (CART). Mathematically speaking, we can write the model as follows:
+\begin{equation}\label{eq:1}
+    \hat{y}_{i}=\sum_{k=1}^{K} f_{k}\left(x_{i}\right), f_{k} \in \mathcal{F}
+\end{equation}
+
+Among them, the K is the number of trees, f is a function of f space, f it is possible to set the CART, the input value $\vec{x_i}=\{IF_{rc},f,N_{dw},N_v,N_c,N_iw,N_s,IF_{vb},IF_{vc},IF_p,IF_w\}$. The objective function of the above model is given by the following equation:
+\begin{equation}\label{eq:3}
+    \operatorname{obj}(\theta)=\sum_{i}^{n} l\left(y_{i}, \hat{y}_{i}\right)+\sum_{k=1}^{K} \omega\left(f_{k}\right)
+\end{equation}
+
+Where the first term is the loss function, and the second term is the regularization parameter.
+
+
+For the current tree model, the learning method is to define the objective function and optimize it. We have defined the objective function above, but considering the difficulty of learning the tree structure, we also adopt the addition strategy to optimize it, adding a new tree at a time:
+
+\begin{equation}\label{eq:3}
+\hat{y}_i^{(t)} = \sum_{k=1}^t f_k(x_i)= \hat{y}_i^{(t-1)} + f_t(x_i)
+\end{equation}
+
+
+Then select the tree that can optimize the objective function, and consider using the mean square error (MSE) as the loss function:
+
+\begin{equation}\label{eq:origin}
+\begin{split}\text{obj}^{(t)} & = \sum_{i=1}^n (y_i - (\hat{y}_i^{(t-1)} + f_t(x_i)))^2 + \sum_{i=1}^t\omega(f_i) \\
+          & = \sum_{i=1}^n [2(\hat{y}_i^{(t-1)} - y_i)f_t(x_i) + f_t(x_i)^2] + \omega(f_t) + \mathrm{constant}\end{split}
+\end{equation}
+
+The loss function is obtained by Taylor expansion to second order and removing all constants:
+\begin{equation}
+\sum_{i=1}^n [g_i f_t(x_i) + \frac{1}{2} h_i f_t^2(x_i)] + \omega(f_t)
+\end{equation}
+
+Under this definition, the value of the objective function is determined only by $g_i$ and $h_i$. This is how XGBoost supports custom loss functions.
+
+
+After reformulating the tree model, we can write the target value as:
+
+\begin{equation}
+\begin{split}\text{obj}^{(t)} &\approx \sum_{i=1}^n [g_i w_{q(x_i)} + \frac{1}{2} h_i w_{q(x_i)}^2] + \gamma T + \frac{1}{2}\lambda \sum_{j=1}^T w_j^2\\
+&= \sum^T_{j=1} [(\sum_{i\in I_j} g_i) w_j + \frac{1}{2} (\sum_{i\in I_j} h_i + \lambda) w_j^2 ] + \gamma T\end{split}
+\end{equation}
+
+If the structure part q of the tree is known, the objective function can be used to find the optimal Wj and obtain the optimal objective function value. Its essence can be reduced to the problem of solving the minimum value of quadratic function. The solution is:
+\begin{equation}
+\begin{split}w_j^\ast &= -\frac{G_j}{H_j+\lambda}\\
+\text{obj}^\ast &= -\frac{1}{2} \sum_{j=1}^T \frac{G_j^2}{H_j+\lambda} + \gamma T\end{split}
+\end{equation}
+
+\subsubsection{New MIMO XGBoost Model}
+The traditional XGBoost model \cite{chen2016xgboost} is a multi-input single-output model that can only predict the value of one n tries ($R_{tn}$) at a time. If  seven XGBoost models are trained independently, the different $R_{tn}$ may not satisfy the following constraints due to the lack of correlation:
+\begin{equation}
+\text { total }=\sum_{n=1}^{7} R_{t n}=100
+\end{equation}
+
+To address the above challenges, we propose the MIMO XGBoost model (see Figure~\ref{fig:model}). We train seven XGBoost regression models synchronously to predict the player score distribution (the value of $R_{t1}-R_{t7}$) based on word's spatio-temporal properties, i.e., MIMO. Furthermore, a distributed objective function is designed to ensure that the seven models optimize the parameters towards a common goal, that is, the constraint that the sum of frequencies is 1 is satisfied. After the joint training is completed, each model can be used independently, that is, asynchronously. Specifically, the data of the seven XGBoost models are shared and the iterations are synchronized. After each round of iteration, the Synchro-Aggregation Controller collects the output values of the seven models and sends the seven values to each model, and then informs all the models for the next round of iteration. In other words, the Controller enables the sharing of output values between models and synchronization of training.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.7\textwidth]{img/model.png}
+    \caption{MIMO XGBoost Model}\label{fig:model}
+\end{figure}
+
+Correspondingly, model n is used to predict $R_{tn}$. For each data point i in model n, we add a bias term to the square loss $V_{dn}$:
+\begin{equation}
+\begin{array}{c}
+\operatorname{Loss}_{n}=\left(y_{n i}-\hat{y}_{n i}\right)^{2}+V_{d n} \\
+V_{d n}=10^{-2} y_{n i}\left(100-\sum_{j=1}^{7} \hat{y}_{j i}\right)^{2}
+\end{array}
+\end{equation}
+
+Where, $y_{in}$ denotes the value of n tries for data point i. Accordingly, $\hat{y}_{ji}$ represents the predicted value of j tries for data point i. Since the overall deviation $(100-\sum_{j=1}^{7} \hat{y}_{j i})$ is the result of the combined effect of 7 models, the overall deviation is multiplied by the contribution coefficient $10^{-2}y_{ni}$ to obtain the contribution of model n in the overall deviation. That is, the bias $V_{dn}$ caused by model n.
+Next, we define the cost function for model n:
+\begin{equation}
+\operatorname{Cost}_{n}=\sum_{i}^{N} \operatorname{Loss}_{n}=\sum_{i}^{N}\left[\left(y_{n i}-\hat{y}_{n i}\right)^{2}+10^{-2} y_{n i}\left(100-\sum_{j=1}^{7} \hat{y}_{j i}\right)^{2}\right]
+\end{equation}
+
+
+Where N is the total number of data points in the training set.
+We pick the vector $X=\left(P S, F, R_{h}, N_{d w}, N_{v}, N_{c}, N_{i w}, N_{s}, I F_{r c}, I F_{v b}, I F_{v e}, I F_{v c}, I F_{p}\right)$ as input, the model of n, in its own namespace, has the following objective function:
+
+\begin{equation}
+\begin{split}
+    \mathrm{obj}_{n}^{(t)} & =\operatorname{Cost}_{n}+\sum_{i=1}^{t} \omega\left(f_{k}\right) \\
+& =\sum_{i=1}^{N}\left[2\left(\hat{y}_{n i}^{(t-1)}-y_{n i}\right) f_{t}\left(\boldsymbol{X}_{i}\right)+f_{t}\left(\boldsymbol{X}_{i}\right)^{2}+10^{-2} y_{n i}\left(100-\sum_{j=1}^{7} \hat{y}_{j i}\right)^{2}\right]+\omega\left(f_{t}\right)+\text { constant }
+\end{split}
+\end{equation}
+
+Taking the Taylor expansion of the loss function to second order and removing all the constants yields:
+\begin{equation}
+\operatorname{obj}_{n}^{(t)}{ }= \sum_{i=1}^{N}\left[g_{i} f_{t}\left(\boldsymbol{X}_{i}\right)+\frac{1}{2} h_{i} f_{t}^{2}\left(\boldsymbol{X}_{i}\right)\right]+\omega\left(f_{t}\right)
+\end{equation}
+
+The value of the objective function only depends on $g_i$ and $h_i $. In line with the way XGBoost supports custom loss functions.
+
+
+
+
+\section{Results \& Discussion}
+
+
+
+\subsection{ARIMA Model Checking}
+We finally determined the ARIMA model as ARIMA(1,1,0), and then substituted the standardized data set. The model parameter table is as follows. The Table \ref{A} shows the results of this model test, including the number of samples, degrees of freedom, Q statistics and the goodness of fit of the information criterion model. According to the test table, the goodness of fit R² of the model is 0.977, and the model perform well.
+% Table
+%\usepackage{multirow}
+\begin{table}[]
+\centering
+\begin{tabular}{|ccc|}
+\hline
+\multicolumn{3}{|c|}{ARIMA   model (1,1,0) Test Table}                                          \\ \hline
+\multicolumn{1}{|c|}{Item}              & \multicolumn{1}{c|}{Symbol}         & Value           \\ \hline
+\multicolumn{1}{|c|}{}                  & \multicolumn{1}{c|}{Df   Residuals} & 45              \\ \hline
+\multicolumn{1}{|c|}{Number of samples} & \multicolumn{1}{c|}{N}              & 48              \\ \hline
+\multicolumn{1}{|c|}{\multirow{5}{*}{Q statistic}}           & \multicolumn{1}{c|}{Q6(P   value)} & 3.317(0.069*) \\ \cline{2-3} 
+\multicolumn{1}{|c|}{}                  & \multicolumn{1}{c|}{Q12(P value)}   & 13.838(0.031**) \\ \cline{2-3} 
+\multicolumn{1}{|c|}{}                  & \multicolumn{1}{c|}{Q18(P value)}   & 18.141(0.111)   \\ \cline{2-3} 
+\multicolumn{1}{|c|}{}                  & \multicolumn{1}{c|}{Q24(P value)}   & 18.315(0.435)   \\ \cline{2-3} 
+\multicolumn{1}{|c|}{}                  & \multicolumn{1}{c|}{Q30(P value)}   & 18.384(0.784)   \\ \hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{Information criterion}} & \multicolumn{1}{c|}{AIC}           & 1041.317      \\ \cline{2-3} 
+\multicolumn{1}{|c|}{}                  & \multicolumn{1}{c|}{BIC}            & 1046.867        \\ \hline
+\multicolumn{1}{|c|}{Goodness of fit}   & \multicolumn{1}{c|}{R²}             & 0.977           \\ \hline
 \end{tabular}
-\end{center}
+\caption{\label{A}Note: ***, **, * represent significance levels of 1\%, 5\%, and 10\% respectively}
 \end{table}
 
 
-Authors should try and use the space allocated to them as economically as possible. At times it may be convenient to put two figures side by side or the caption at the side of a figure. To put figures side by side, within a figure environment, put each figure and its caption into a minipage with an appropriate width (e.g. 3in or 18pc if the figures are of equal size) and then separate the figures slightly by adding some horizontal space between the two minipages (e.g. \verb"\hspace{.2in}" or \verb"\hspace{1.5pc}". To get the caption at the side of the figure add the small horizontal space after the \verb"\includegraphics" command and then put the \verb"\caption" within a minipage of the appropriate width aligned bottom, i.e. \verb"\begin{minipage}[b]{3in}" etc (see code in this file used to generate figures 1--3).
-
-Note that it may be necessary to adjust the size of the figures (using optional arguments to \verb"\includegraphics", for instance \verb"[width=3in]") to get you article to fit within your page allowance or to obtain good page breaks.
+Finally, we got the time series diagram and prediction interval diagram for the simulated average number of people, as shown in the Figure \ref{fig:TSP} and Figure \ref{fig:end}:
 
 \begin{figure}[h]
-\begin{minipage}{14pc}
-\includegraphics[width=14pc]{name.eps}
-\caption{\label{label}Figure caption for first of two sided figures.}
+\begin{minipage}{20pc}
+\includegraphics[width=20pc]{img/TSP.png}
+\caption{\label{fig:TSP}Time series graph of average population}
 \end{minipage}\hspace{2pc}%
-\begin{minipage}{14pc}
-\includegraphics[width=14pc]{name.eps}
-\caption{\label{label}Figure caption for second of two sided figures.}
+\begin{minipage}{20pc}
+\includegraphics[width=20pc]{img/end.png}
+\caption{\label{fig:end}The forecast range of the average population}
 \end{minipage} 
 \end{figure}
 
+
+
+
+It can be seen that through the ARIMA Model, the time-related group phenomenon of the number of players can be accurately predicted.
+
+
+
+
+\subsection{MIMO XGBoost Model Detection}
+
+
+Using 70\% of the normalized dataset as the training set and the remaining part as the test set, the Percentage of the n tries($R_{tn}$) of the test set is calculated, and the predicted values of each are obtained, in Table i, the left side is the predicted value and the right side is the true value.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.7\textwidth]{img/image.png}
+\caption{\label{fig:image}3 tries Partial table of test samples versus real samples}
+\end{figure}
+
+As can be seen from the Figure \ref{fig:image}, the difference between all predicted and true results is very small, at most 0.24.
+
+Carrying out our quantitative tests using several common statistical parameters for the obtained data conclusions, Root Mean Square Error (RMSE) is the first measure we choose to use, which can effectively test the accuracy of the predicted values, the relevant formula is as follows:
+
+\begin{equation}\label{eq:RMSE}
+R M S E=\sqrt{\frac{1}{n} \sum_{i=1}^{n}\left(\hat{y}_{i}-y_{i}\right)^{2}}
+\end{equation}
+
+In addition, we choose the Mean Absolute Error (MAE) as the accuracy measure. MAE can reflect the actual situation of the predicted value error, and the relevant formula is as follows:
+
+\begin{equation}\label{eq:MAE}
+\mathrm{MAE}=\frac{1}{\mathrm{n}} \sum_{\mathrm{i}=1}^{\mathrm{n}}\left|\hat{\mathrm{y}}_{\mathrm{i}}-\mathrm{y}_{\mathrm{i}}\right|
+\end{equation}
+
+Finally, the conventional goodness-of-fit $R^2$ is selected as the overall evaluation of model fitting. The Figure \ref{fig:compare} shows the test result statistics of the test set and the training set:
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.8\textwidth]{img/compare.png}
+\caption{Evaluation results of EERIE}\label{fig:compare}
+\end{figure}
+
+The evaluation indexes of the training set were $RMSE=2.907$ , $MAE=0.807$,$R^2=0.95$ It can be considered that our optimized model has a good fit.
+The evaluation metrics for the test set were RMSE = 2.208 and MAE = 1.094, respectively, with a goodness of fit, indicating that the predictiveness of the model is very accurate and reflects the influence of the objective property of words on the distribution of attempts.
+
+
+\subsection{Discussion}
+
 \begin{figure}[h]
-\includegraphics[width=14pc]{name.eps}\hspace{2pc}%
-\begin{minipage}[b]{14pc}\caption{\label{label}Figure caption for a narrow figure where the caption is put at the side of the figure.}
-\end{minipage}
+\begin{minipage}{18pc}
+\includegraphics[width=24pc]{img/insight1.png}
+\caption{\label{fig:insignt1}Trends in three kinds of data}
+\end{minipage}\hspace{2pc}%
+\begin{minipage}{18pc}
+\includegraphics[width=20pc]{img/insight2.png}
+\caption{\label{fig:insignt2}The variation trend}
+\end{minipage} 
 \end{figure}
 
-Using the graphicx package figures can be included using code such as:
-\begin{verbatim}
-\begin{figure}
-\begin{center}
-\includegraphics{file.eps}
-\end{center}
-\caption{\label{label}Figure caption}
-\end{figure}
-\end{verbatim}
 
+In addition, through the study of the data, we found the characteristics that are reflected in the data. Figure \ref{fig:insignt1} shows the data graphs of the number of people who participated in the game, the number of people who chose the difficult mode, and the percentage of the number of people who chose the difficult mode to the total number of people over time, respectively. From the graph, we can easily see that the number of people playing each day shows a trend of increasing and then decreasing. At the same time, we notice that the percentage of difficult mode players is increasing slightly, which, combined with the two graphs above, we can roughly assume is mainly caused by the decrease in the total number of players, but this percentage also reflects that there are still a group of loyal users of difficult mode who are eager to challenge themselves in the word-guessing game every day. Figure \ref{fig:insignt2} reflects the numerical relationship between the number of attempts, date and percentage, which is roughly normally distributed, with the daily highs in percentage concentrated between 2, 3, 4 and 5 attempts. All cases of 1 vs. 7 attempts can be considered as having a very low percentage when excluding the anomalies of individual players, and this feature is well corroborated with our previous predictions for words.
+
+
+\section{Conclusion}
+We looked at Wordle's daily Number of players and Number of players and explored the relationship between these data. First, we collected 359 days of player data for words and corresponding dates from the New York Times and Twitter. Based on the understanding of Wordle's rules and the characteristics of social networks, we propose to integrate the heterogeneous spatio-temporal features of word topology and social network activity. Secondly, we constructed an ARIMA model to analyze the time series of the number of people playing Wordle every day and get the prediction. Again, we propose a MIMO XGBoost Model to predict the distribution of player scores and guarantee that the distribution of scores satisfies the constraint that the sum of frequencies is one. Experimental results show that the goodness of fit $R^2$ of ARIMA model is 0.98, which accurately predicts the Number of players. For MIMO XGBoost model, $RMSE=2.208$, $MAE=1.094$, and goodnessof fit $R^2=0.94$, which is superior to the traditional XGBoost model. In the discussion section, we analyze the correlation between each data to show that our model can provide insights for social group phenomena and human behavior in digital society.
+
+% \clearpage
 \section*{References}
-\begin{thebibliography}{9}
-\bibitem{iopartnum} IOP Publishing is to grateful Mark A Caprio, Center for Theoretical Physics, Yale University, for permission to include the {\tt iopart-num} \BibTeX package (version 2.0, December 21, 2006) with  this documentation. Updates and new releases of {\tt iopart-num} can be found on \verb"www.ctan.org" (CTAN). 
-\end{thebibliography}
+\bibliographystyle{iopart-num}
+\bibliography{references}{}
 
 \end{document}
 
