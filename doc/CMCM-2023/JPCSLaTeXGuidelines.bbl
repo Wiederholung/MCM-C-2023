@@ -1,0 +1,67 @@
+\providecommand{\newblock}{}
+\begin{thebibliography}{10}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{{\tt #1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\providecommand{\eprint}[2][]{\url{#2}}
+% Bibliography created with iopart-num v2.1
+% /biblio/bibtex/contrib/iopart-num
+
+\bibitem{revano2018logical}
+Revano T~F, Garcia M~B, Habal B~G~M, Contreras J~O and Enriquez J~B~R 2018
+  Logical guessing riddle mobile gaming application utilizing fisher yates
+  algorithm {\em 2018 IEEE 10th International Conference on Humanoid,
+  Nanotechnology, Information Technology, Communication and Control,
+  Environment and Management (HNICEM)\/} (IEEE) pp 1--4
+
+\bibitem{damkliang2016guessing}
+Damkliang K, Wutthisamai S and Jirasinchanarat P 2016 Guessing english
+  vocabularies: A game application for children on multiple mobile platforms
+  {\em 2016 8th International Conference on Knowledge and Smart Technology
+  (KST)\/} (IEEE) pp 102--107
+
+\bibitem{smith2011cross}
+Smith K, Smith A~D and Blythe R~A 2011 {\em Cognitive Science\/} {\bf 35}
+  480--498
+
+\bibitem{schmitt1997researching}
+Schmitt N and Meara P 1997 {\em Studies in second language acquisition\/} {\bf
+  19} 17--36
+
+\bibitem{yuan2021survey}
+Yuan H and Li G 2021 {\em Data Science and Engineering\/} {\bf 6} 63--85
+
+\bibitem{siami2019performance}
+Siami-Namini S, Tavakoli N and Namin A~S 2019 The performance of lstm and
+  bilstm in forecasting time series {\em 2019 IEEE International Conference on
+  Big Data (Big Data)\/} (IEEE) pp 3285--3292
+
+\bibitem{sheng2022optimized}
+Sheng C and Yu H 2022 An optimized prediction algorithm based on xgboost {\em
+  2022 International Conference on Networking and Network Applications
+  (NaNA)\/} (IEEE) pp 1--6
+
+\bibitem{zhu2022application}
+Zhu H and Zhu A 2022 Application research of the xgboost-svm combination model
+  in quantitative investment strategy {\em 2022 8th International Conference on
+  Systems and Informatics (ICSAI)\/} (IEEE) pp 1--7
+
+\bibitem{wang2020forecasting}
+Wang Y and Guo Y 2020 {\em China Communications\/} {\bf 17} 205--221
+
+\bibitem{siami2018comparison}
+Siami-Namini S, Tavakoli N and Namin A~S 2018 A comparison of arima and lstm in
+  forecasting time series {\em 2018 17th IEEE international conference on
+  machine learning and applications (ICMLA)\/} (IEEE) pp 1394--1401
+
+\bibitem{kalpakis2001distance}
+Kalpakis K, Gada D and Puttagunta V 2001 Distance measures for effective
+  clustering of arima time-series {\em Proceedings 2001 IEEE international
+  conference on data mining\/} (IEEE) pp 273--280
+
+\bibitem{chen2016xgboost}
+Chen T and Guestrin C 2016 Xgboost: A scalable tree boosting system {\em
+  Proceedings of the 22nd acm sigkdd international conference on knowledge
+  discovery and data mining\/} pp 785--794
+
+\end{thebibliography}
